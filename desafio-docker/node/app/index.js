@@ -14,8 +14,10 @@ const express = require('express');
 const app = express();
 
 app.get('/:nome', function (req, res) {
-  const sql = `INSERT INTO people(name) values('${req.params.nome}')`
-  connection.query(sql)
+  if(req.params.nome != "favicon.ico") {
+    const sql = `INSERT INTO people(name) values('${req.params.nome}')`
+    connection.query(sql)
+  }
   connection.query('SELECT * FROM people', (err, rows, fields) => {
     resposta = `<h1>Full Cycle Rocks!</h1>
         <ul>`
@@ -30,6 +32,24 @@ app.get('/:nome', function (req, res) {
     res.send(resposta)
   });
 });
+
+app.get('/', function (req, res) {
+  connection.query('SELECT * FROM people', (err, rows, fields) => {
+    resposta = `<h1>Full Cycle Rocks!</h1>
+        <ul>`
+    if (!err) {
+      for (i = 0; i < rows.length; i++) {
+        resposta += `<li>${rows[i].name}</li>`
+      }
+      resposta = resposta + `</ul>`
+    } else
+      resposta = "erro na consulta"
+
+    res.send(resposta)
+  });
+});
+
+
 
 app.listen(5000, () => console.log('Server is up and running'));
 
